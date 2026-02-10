@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Gestão Estratégica - Ciméia</title>
+<!-- Fonte Poppins do Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ================== VARIÁVEIS GLOBAIS ================== */
+:root { 
+    --accent: #ff6b6b; 
+    --glass: rgba(255, 255, 255, 0.25); 
+}
+
+/* ================== RESET E BOX-SIZING ================== */
+* { box-sizing: border-box; margin:0; padding:0; }
+
+/* ================== BODY E FUNDO ================== */
+body { 
+    font-family: 'Poppins', sans-serif; 
+    color: #000;
+    background: url('rotina.cimeia.png') no-repeat center center; /* imagem de fundo */
+    background-size: cover; /* cobre toda a tela */
+    min-height: 100vh; 
+    display: flex; 
+    flex-direction: column;
+}
+
+/* ================== HEADER ================== */
+header { 
+    padding: 20px 40px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+/* Classe para textos com efeito neon rosa */
+.neon-rosa-preto { 
+    color: #000 !important; 
+    text-shadow: 0 0 8px #ff6b6b, 0 0 15px #ff6b6b !important; 
+    text-transform: uppercase; 
+}
+
+/* ================== CONTEÚDO PRINCIPAL ================== */
+.main-content { 
+    flex-grow: 1; 
+    display: flex; 
+    flex-direction: column; 
+    padding: 20px 40px 30px; 
+    gap: 20px; 
+}
+
+/* ================== LINHA SUPERIOR (TOP ROW) ================== */
+.top-row { 
+    display: grid; 
+    grid-template-columns: 320px 1fr; /* primeira coluna fixa (calendário), segunda coluna flexível (tarefas) */
+    gap: 20px; 
+    min-height: 300px; 
+}
+
+/* ================== CARD ================== */
+.card { 
+    background: var(--glass); 
+    border-radius: 24px; 
+    -webkit-backdrop-filter: blur(20px); /* Safari */
+    backdrop-filter: blur(20px); 
+    border: 1px solid rgba(255,255,255,0.3); 
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden; 
+}
+
+/* ================== CALENDÁRIO ================== */
+.calendar-grid { 
+    display: grid; 
+    grid-template-columns: repeat(7, 1fr); /* 7 dias da semana */
+    gap: 5px; 
+    color: #000; 
+    margin-top: 10px; 
+}
+.day { 
+    padding: 8px 0; 
+    cursor: pointer; 
+    border-radius: 8px; 
+    font-size: 0.9rem; 
+    text-align: center; 
+    font-weight: 500; 
+}
+.selected { 
+    background: #000 !important; 
+    color: #fff !important; 
+    font-weight: 600; 
+    box-shadow: 0 0 10px #ff6b6b; 
+}
+
+/* ================== TAREFAS ================== */
+#todo-area { display:none; flex-grow:1; flex-direction:column; overflow:hidden; margin-top:10px; }
+ol { 
+    list-style: none; 
+    padding: 0; 
+    margin: 10px 0 0 0; 
+    overflow-y: auto; 
+    flex-grow: 1; 
+    max-height: 250px; /* limite de altura */
+}
+/* barra de rolagem personalizada */
+ol::-webkit-scrollbar { width: 10px; }
+ol::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
+ol::-webkit-scrollbar-thumb { background: #000; border-radius: 10px; border: 2px solid rgba(255,255,255,0.5); }
+
+li { 
+    background: rgba(255,255,255,0.3); 
+    margin-bottom: 8px; 
+    padding: 12px 15px; 
+    border-radius: 12px; 
+    border: 1px solid rgba(0,0,0,0.1); 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    color: #000; 
+    font-weight: 500; 
+}
+
+.btn-action { 
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    color: #000; 
+    font-size: 1.1rem; 
+    margin-left: 5px; 
+}
+
+input[type="text"] { 
+    background: rgba(255,255,255,0.4); 
+    border: 1px solid #000; 
+    border-radius: 12px; 
+    padding: 12px; 
+    color: #000; 
+    flex-grow: 1; 
+    outline: none; 
+    font-weight: 600; 
+}
+
+.btn-add { 
+    background: #000; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 12px; 
+    color: white; 
+    cursor: pointer; 
+    font-weight: 600; 
+}
+
+/* ================== NOTAS ================== */
+textarea { 
+    background: rgba(255,255,255,0.3); 
+    border: 1px solid rgba(0,0,0,0.1); 
+    color: #000; 
+    padding: 15px; 
+    border-radius: 15px; 
+    flex-grow: 1; 
+    resize: none; 
+    outline: none; 
+    font-weight: 500; 
+}
+
+/* ================== RELÓGIO ================== */
+#real-time-clock { 
+    text-align: right; 
+    font-size: 1.2rem; 
+    font-weight: 600; 
+    margin-top: 10px; 
+    color: #000; 
+    opacity: 0.8; 
+    border-top: 1px solid rgba(0,0,0,0.1); 
+    padding-top: 5px; 
+}
+
+/* ================== RESPONSIVIDADE ================== */
+@media (max-width: 900px) { 
+    .top-row { grid-template-columns: 1fr; height: auto; } 
+    .main-content { padding: 15px 20px 20px; gap: 15px; } 
+}
+@media (max-width: 600px) {
+    h1.neon-rosa-preto { font-size: 5vw; }
+    .neon-rosa-preto { font-size: 3vw; }
+    #real-time-clock { font-size: 4vw; }
+    input[type="text"], .btn-add { font-size: 3vw; padding: 8px; }
+    textarea { font-size: 3vw; padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ================== HEADER ================== -->
+<header>
+<h1 class="neon-rosa-preto" style="letter-spacing: 4px;">WORKSPACE</h1>
+<div style="text-align: right;">
+<span class="neon-rosa-preto" style="letter-spacing: 2px; font-size:0.8rem;">ADMINISTRADORA</span><br>
+<strong class="neon-rosa-preto" style="font-size:1rem;">CIMÉIA</strong>
+</div>
+</header>
+
+<!-- ================== CONTEÚDO PRINCIPAL ================== -->
+<div class="main-content">
+
+    <!-- LINHA SUPERIOR: CALENDÁRIO + TAREFAS -->
+    <div class="top-row">
+        <!-- CARD DO CALENDÁRIO -->
+        <div class="card">
+            <h3 class="neon-rosa-preto" style="font-size:0.8rem;">CALENDÁRIO</h3>
+            <div class="calendar-grid" id="calendar-body"></div>
+        </div>
+
+        <!-- CARD DAS DIRETRIZES / TAREFAS -->
+        <div class="card">
+            <h3 id="display-date" class="neon-rosa-preto" style="font-size:0.8rem;">DIRETRIZES</h3>
+            <div id="todo-area">
+                <div style="display:flex; gap:10px; margin-bottom:5px;">
+                    <input type="text" id="task-input" placeholder="O que administrar?">
+                    <button class="btn-add" onclick="addTask()">OK</button>
+                </div>
+                <ol id="task-list"></ol>
+                <div id="real-time-clock">00:00:00</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LINHA INFERIOR: NOTAS -->
+    <div class="bottom-row" style="margin-top:15px;">
+        <div class="card" style="height: 150px;">
+            <h3 class="neon-rosa-preto" style="font-size:0.8rem;">NOTAS DE CAMPO</h3>
+            <textarea id="daily-notes" placeholder="Digite aqui..." oninput="saveNotes()"></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- ================== SCRIPT ================== -->
+<script>
+let activeDate = ""; // variável global para controlar o dia selecionado
+
+// ================== RELÓGIO ==================
+function updateClock() { 
+    document.getElementById('real-time-clock').innerText = new Date().toLocaleTimeString('pt-BR'); 
+}
+setInterval(updateClock, 1000);
+
+// ================== INICIALIZA CALENDÁRIO ==================
+function initCalendar() {
+    const container = document.getElementById('calendar-body');
+    const sem = ['D','S','T','Q','Q','S','S']; // dias da semana
+    sem.forEach(s => { 
+        const d = document.createElement('div'); 
+        d.style.fontWeight='700'; 
+        d.style.textAlign='center'; 
+        d.innerText=s; 
+        container.appendChild(d); 
+    });
+    
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+
+    // Cria os dias do mês
+    for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dayEl = document.createElement('div');
+        dayEl.className = 'day'; 
+        dayEl.innerText = d;
+        dayEl.onclick = () => selectDate(dateStr, d, month);
+        container.appendChild(dayEl);
+    }
+
+    // Seleciona automaticamente o dia atual
+    const todayStr = `${year}-${String(month+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+    selectDate(todayStr, today.getDate(), month);
+}
+
+// ================== FUNÇÃO PARA SELECIONAR DIA ==================
+function selectDate(dateStr, day, month) {
+    activeDate = dateStr;
+    // Remove seleção antiga
+    document.querySelectorAll('.day').forEach(el => el.classList.remove('selected'));
+    const dayElements = document.querySelectorAll('.day');
+    dayElements.forEach(el => { if(el.innerText == day) el.classList.add('selected'); });
+    const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    document.getElementById('display-date').innerText = `${day} de ${months[month]}`;
+    document.getElementById('todo-area').style.display = "flex";
+    renderTasks(); // renderiza tarefas
+    loadNotes();   // carrega notas
+}
+
+// ================== FUNÇÕES DE NOTAS ==================
+function saveNotes() { 
+    if(activeDate) localStorage.setItem("notes_"+activeDate, document.getElementById('daily-notes').value); 
+}
+function loadNotes() { 
+    document.getElementById('daily-notes').value = localStorage.getItem("notes_"+activeDate) || ""; 
+}
+
+// ================== FUNÇÕES DE TAREFAS ==================
+function addTask() {
+    const input = document.getElementById('task-input'); 
+    if (!input.value.trim()) return;
+    const tasks = JSON.parse(localStorage.getItem(activeDate) || "[]");
+    tasks.push({ text: input.value, done: false }); 
+    localStorage.setItem(activeDate, JSON.stringify(tasks));
+    input.value = ""; 
+    renderTasks();
+}
+
+function renderTasks() {
+    const list = document.getElementById('task-list'); 
+    list.innerHTML = "";
+    const tasks = JSON.parse(localStorage.getItem(activeDate) || "[]");
+    tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span style="${task.done ? 'text-decoration:line-through; opacity:0.4' : ''}">${task.text}</span>
+            <div>
+                <button class="btn-action" onclick="toggleTask(${index})">${task.done ? '✔️' : '⭕'}</button>
+                <button class="btn-action" onclick="editTask(${index})">✏️</button>
+                <button class="btn-action" onclick="deleteTask(${index})">🗑️</button>
+            </div>`;
+        list.appendChild(li);
+    });
+}
+
+// alterna tarefa concluída/não concluída
+function toggleTask(index) {
+    const tasks = JSON.parse(localStorage.getItem(activeDate));
+    tasks[index].done = !tasks[index].done;
+    localStorage.setItem(activeDate, JSON.stringify(tasks));
+    renderTasks();
+}
+
+// editar tarefa
+function editTask(index) {
+    const tasks = JSON.parse(localStorage.getItem(activeDate));
+    const newText = prompt("Editar:", tasks[index].text);
+    if (newText !== null && newText.trim() !== "") { 
+        tasks[index].text = newText; 
+        localStorage.setItem(activeDate, JSON.stringify(tasks)); 
+        renderTasks(); 
+    }
+}
+
+// deletar tarefa
+function deleteTask(index) {
+    const tasks = JSON.parse(localStorage.getItem(activeDate));
+    tasks.splice(index, 1); 
+    localStorage.setItem(activeDate, JSON.stringify(tasks)); 
+    renderTasks();
+}
+
+// ================== INICIALIZA TUDO ==================
+initCalendar(); 
+updateClock();
+</script>
+
+</body>
+</html>
